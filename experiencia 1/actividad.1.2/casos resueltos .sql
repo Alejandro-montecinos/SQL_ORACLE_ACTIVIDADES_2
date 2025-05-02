@@ -46,10 +46,35 @@ from empleado
 WHERE run_jefe is not NULL
 group by run_jefe;
 
+//caso 4
+
+SELECT * FROM empleado;
+SELECT * FROM escolaridad_emp;
+
+SELECT 
+em.id_escolaridad as "ESCOLARIDAD",
+ep.desc_escolaridad as "DESCRIPCION ESCOLARIDAD" ,
+count(em.id_escolaridad) as "TOTAL EMPLEADOS",
+to_char(max(em.salario),'999g999g999') as "SALARIO MAXIMO",
+to_char(min(em.salario),'999g999g999') as "SALARIO MINIMO ",
+to_char(sum(em.salario),'999g999g999') as "SALARIO TOTAL",
+to_char(avg(em.salario),'999g999g999') as "SALARIO TOTAL"
+
+FROM empleado em JOIN escolaridad_emp ep ON(em.id_escolaridad = ep.id_escolaridad)
+group by em.id_escolaridad,ep.desc_escolaridad
+order by count(em.id_escolaridad) desc;
+
+//caso 5
+
+SELECT * FROM prestamo;
+
+select 
+
+
+count(ejemplarid)
 
 
 
-
-
-
+from prestamo
+group by ejemplarid;
 
