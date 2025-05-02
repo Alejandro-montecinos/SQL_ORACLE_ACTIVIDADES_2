@@ -69,12 +69,20 @@ order by count(em.id_escolaridad) desc;
 SELECT * FROM prestamo;
 
 select 
-
-
-count(ejemplarid)
-
+tituloid as "CODIGO DEL LIBRO" ,
+count(ejemplarid) AS "TOTAL DE VECES SOLICITADO",
+(case 
+    when count(ejemplarid) = 1 then 'No se requieren nuevos ejemplares'
+    when count(ejemplarid) = 2 or count(ejemplarid) = 3 then 'Se requiere comprar 1 nuevos ejemplares'
+    when count(ejemplarid) = 4 or count(ejemplarid) = 5 then 'Se requiere comprar 2 nuevos ejempalres'
+    when count(ejemplarid) >5 then'Se requiere comprar 4 nuevos ejemplares'
+    else 'no posee libros' end) AS "SUGERENCIA" 
 
 
 from prestamo
-group by ejemplarid;
+where extract( year from fecha_ini_prestamo) = extract( year from sysdate) -1
+group by tituloid
+order by count(ejemplarid) desc;
+
+//caso 6
 
