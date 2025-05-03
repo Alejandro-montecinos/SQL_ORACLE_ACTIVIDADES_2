@@ -86,3 +86,17 @@ order by count(ejemplarid) desc;
 
 //caso 6
 
+select * FROM prestamo;
+
+SELECT 
+
+replace(to_char(run_emp,'09g999g999'),',','.') as "RUN EMPLEADO",
+to_char(fecha_ini_prestamo,'MM/YYYY') as "MES PRESTAMOS LIBROS",
+count(ejemplarid) AS "TOTAL PRESTAMOS ATENDIDOS",
+to_char(count(ejemplarid)*10000,'$999g999') AS "ASIGNACION POR PRESTAMOS"
+
+FROM prestamo 
+where EXTRACT(year from fecha_ini_prestamo) = EXTRACT(year from sysdate)-1
+GROUP BY run_emp,to_char(fecha_ini_prestamo,'MM/YYYY')
+ORDER BY count(ejemplarid) desc; 
+
