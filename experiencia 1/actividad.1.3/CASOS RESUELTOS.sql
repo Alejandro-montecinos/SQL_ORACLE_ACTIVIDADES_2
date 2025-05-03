@@ -17,17 +17,28 @@ where (extract(month from sysdate)+5) = extract (month from c.fecha_nacimiento)
 order by extract(day from c.fecha_nacimiento);
 
 
+//caso 2
 
+select 
+REPLACE(TO_CHAR(c.numrun,'999G999G999'),',','.')||'-'||UPPER(c.dvrun) as "RUN CLIENTE",
+c.pnombre ||' '||c.snombre||' '||c.appaterno||' '||c.apmaterno as "NOMBRE CLIENTE",
+REPLACE(TO_CHAR(cc.monto_solicitado,'999G999G999'),',','.') as "MONTO SOLICITADO CREDITOS",
+REPLACE(TO_CHAR((cc.monto_solicitado/100000)*1200,'999G999G999'),',','.') as "TOTAL PESSO TODO SUMA"
+
+from credito_cliente cc  join cliente c on(cc.nro_cliente = c.nro_cliente);
+
+
+//CASO 3
 
 SELECT 
-    c.numrun || '-' || c.dvrun AS rut,
-    c.pnombre || ' ' || c.snombre || ' ' || c.appaterno || ' ' || c.apmaterno AS nombre_completo,
-    po.nombre_prof_ofic,
-    TO_CHAR(c.fecha_inscripcion, 'DD "de" Month', 'NLS_DATE_LANGUAGE=SPANISH') AS fecha_inscripcion
-FROM 
-    cliente c
-    JOIN profesion_oficio po USING(cod_prof_ofic)
-WHERE 
-    EXTRACT(MONTH FROM c.fecha_nacimiento) = EXTRACT(MONTH FROM SYSDATE)
-ORDER BY 
-    c.fecha_nacimiento;
+
+
+TO_CHAR(cc.fecha_otorga_cred,'MM')||''||TO_CHAR(cc.fecha_otorga_cred,'YYYY'),
+ct.nombre_credito
+
+FROM credito_cliente cc join credito ct on(cc.cod_credito = ct.cod_credito)
+WHERE EXTRACT(YEAR FROM cc.fecha_otorga_cred) = EXTRACT(YEAR FROM SYSDATE)-1
+ORDER BY cc.fecha_otorga_cred ASC;
+
+
+

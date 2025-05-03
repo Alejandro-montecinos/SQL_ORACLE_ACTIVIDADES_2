@@ -1,4 +1,6 @@
-/* Creación de usuario si está trabajando con BD Oracle XE */
+
+alter session set"_ORACLE_SCRIPT"=TRUE;
+
 CREATE USER BDY1102_P3 IDENTIFIED BY "BDY1102_P3.practica_3"
 DEFAULT TABLESPACE "USERS"
 TEMPORARY TABLESPACE "TEMP";
