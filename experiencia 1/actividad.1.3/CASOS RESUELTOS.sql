@@ -34,7 +34,18 @@ SELECT
 
 
 TO_CHAR(cc.fecha_otorga_cred,'MM')||''||TO_CHAR(cc.fecha_otorga_cred,'YYYY'),
-ct.nombre_credito
+ct.nombre_credito,
+cc.monto_solicitado AS "MONTO SOLICITADO CREDITO",
+
+case
+    when cc.monto_credito between 100000 and 1000000 then cc.monto_credito * 1.01
+    when cc.monto_credito between 1000001 and 2000000 then cc.monto_credito * 1.02
+    when cc.monto_credito between 2000001 and 4000000 then cc.monto_credito * 1.03
+    when cc.monto_credito between 4000001 and 6000000 then cc.monto_credito * 1.04
+    when cc.monto_credito >6000000 then cc.monto_credito * 1.07
+    else cc.monto_credito 
+end as "APORTE A LA SBIF"
+
 
 FROM credito_cliente cc join credito ct on(cc.cod_credito = ct.cod_credito)
 WHERE EXTRACT(YEAR FROM cc.fecha_otorga_cred) = EXTRACT(YEAR FROM SYSDATE)-1
