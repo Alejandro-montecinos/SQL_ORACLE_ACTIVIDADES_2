@@ -83,5 +83,47 @@ FROM cliente c join producto_inversion_cliente pi on(pi.nro_cliente = c.nro_clie
 group by pi.nro_cliente,c.pnombre,c.snombre,c.apmaterno,c.appaterno,c.numrun,c.dvrun,pi.monto_total_ahorrado
 order by c.appaterno;
 
+//caso 6
+
+//informe 1
+SELECT 
+
+REPLACE(TO_CHAR(c.numrun,'909G999G999'),',','.')||'-'||UPPER(c.dvrun) as "RUN CLIENTE",
+c.pnombre ||' '||c.snombre||' '||c.appaterno||' '||c.apmaterno as "NOMBRE CLIENTE",
+count(cc.nro_cliente) as "TOTAL CREDITOS SOLICITADOS",
+REPLACE(TO_CHAR(sum(cc.monto_credito),'$999G999G999'),',','.') AS "MONTO TOTAL CREDITOS"
+
+
+FROM cliente c join credito_cliente cc on(cc.nro_cliente = c.nro_cliente)
+WHERE extract(year from cc.fecha_otorga_cred) = extract(year from sysdate)-1
+GROUP BY c.numrun,c.dvrun,c.pnombre,c.snombre,c.appaterno,c.apmaterno
+order by c.appaterno;
+
+//informe 2
+
+SELECT 
+    
+REPLACE(TO_CHAR(c.numrun,'909G999G999'),',','.')||'-'||UPPER(c.dvrun) as "RUN CLIENTE",
+c.pnombre ||' '||c.snombre||' '||c.appaterno||' '||c.apmaterno as "NOMBRE CLIENTE",
+
+CASE 
+    WHEN SUM(CASE WHEN m.cod_tipo_mov = 1 THEN m.monto_movimiento ELSE 0 END) = 0 
+    THEN 'No realizado'
+    ELSE TO_CHAR(SUM(CASE WHEN m.cod_tipo_mov = 1 THEN m.monto_movimiento ELSE 0 END))
+END AS "TOTAL ABONOS",
+
+CASE 
+    WHEN SUM(CASE WHEN m.cod_tipo_mov = 2 THEN m.monto_movimiento ELSE 0 END) = 0 
+    THEN 'No realizado'
+    ELSE TO_CHAR(SUM(CASE WHEN m.cod_tipo_mov = 2 THEN m.monto_movimiento ELSE 0 END))
+END AS "TOTAL GIROS"
+
+
+FROM cliente c JOIN movimiento m on(m.nro_cliente = c.nro_cliente)
+WHERE extract(year from m.fecha_movimiento) = extract(year from sysdate)
+group by c.numrun,c.dvrun,c.pnombre,c.snombre,c.appaterno,c.apmaterno
+order by c.appaterno,c.apmaterno;
+
+
 
 
