@@ -33,8 +33,8 @@ from credito_cliente cc  join cliente c on(cc.nro_cliente = c.nro_cliente);
 SELECT 
 
 
-TO_CHAR(cc.fecha_otorga_cred,'MM')||''||TO_CHAR(cc.fecha_otorga_cred,'YYYY'),
-ct.nombre_credito,
+TO_CHAR(cc.fecha_otorga_cred,'MM')||''||TO_CHAR(cc.fecha_otorga_cred,'YYYY') as "MES TRANSACCION",
+ct.nombre_credito AS "TIPO CREDITO",
 cc.monto_solicitado AS "MONTO SOLICITADO CREDITO",
 
 case
@@ -49,7 +49,39 @@ end as "APORTE A LA SBIF"
 
 FROM credito_cliente cc join credito ct on(cc.cod_credito = ct.cod_credito)
 WHERE EXTRACT(YEAR FROM cc.fecha_otorga_cred) = EXTRACT(YEAR FROM SYSDATE)-1
-ORDER BY cc.fecha_otorga_cred ASC;
+ORDER BY extract( month from cc.fecha_otorga_cred) asc , ct.nombre_credito asc ;
+
+//caso 4
+SELECT
+REPLACE(TO_CHAR(c.numrun,'999G999G999'),',','.')||'-'||UPPER(c.dvrun) as "RUN CLIENTE",
+c.pnombre ||' '||c.snombre||' '||c.appaterno||' '||c.apmaterno as "NOMBRE CLIENTE",
+pic.monto_total_ahorrado,
+case
+    WHEN pic.monto_total_ahorrado between 100000 and 1000000 then  'BRONCE'
+    WHEN pic.monto_total_ahorrado between 1000001 and 4000000 then  'PLATA'
+    WHEN pic.monto_total_ahorrado between 4000001 and 8000000 then  'SILVER'
+    WHEN pic.monto_total_ahorrado between 8000001 and 15000000 then  'GOLD'
+    WHEN pic.monto_total_ahorrado > 15000000 then  'PLATINIUM'
+    ELSE 'NO ENTRA DENTRO DEL RANGO'
+END as "CATEGORIA CLIENTE"
+
+ FROM cliente c join producto_inversion_cliente pic on(pic.nro_cliente = c.nro_cliente)
+ order by c.appaterno asc , pic.monto_total_ahorrado desc;
+
+// caso 5
+
+
+SELECT 
+
+EXTRACT(year from sysdate),
+REPLACE(TO_CHAR(c.numrun,'909G999G999'),',','.')||'-'||UPPER(c.dvrun) as "RUN CLIENTE",
+c.pnombre ||' '||substr(c.snombre,1,1)||'. '||c.appaterno||' '||c.apmaterno as "NOMBRE CLIENTE",
+count(*),
+pi.monto_total_ahorrado
+
+FROM cliente c join producto_inversion_cliente pi on(pi.nro_cliente = c.nro_cliente)
+group by pi.nro_cliente,c.pnombre,c.snombre,c.apmaterno,c.appaterno,c.numrun,c.dvrun,pi.monto_total_ahorrado
+order by c.appaterno;
 
 
 
