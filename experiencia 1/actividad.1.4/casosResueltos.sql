@@ -36,6 +36,40 @@ order by "TOTAL PUNTOS ACUMULADOS";
 
 //caso3 
 
-select * 
 
-from transaccion_tarjeta_cliente ttc JOIN ; 
+
+SELECT 
+  TO_CHAR(ttc.fecha_transaccion, 'MMYYYY') AS "MES TRANSACCION",
+  ttt.nombre_tptran_tarjeta,
+  ttc.monto_total_transaccion,
+  CASE
+    WHEN ttc.monto_total_transaccion BETWEEN 100000 AND 1000000 THEN TO_CHAR(ttc.monto_total_transaccion * 0.01, '999G999G999D99')
+    WHEN ttc.monto_total_transaccion BETWEEN 1000001 AND 2000000 THEN TO_CHAR(ttc.monto_total_transaccion * 0.02, '999G999G999D99')
+    WHEN ttc.monto_total_transaccion BETWEEN 2000001 AND 4000000 THEN TO_CHAR(ttc.monto_total_transaccion * 0.03, '999G999G999D99')
+    WHEN ttc.monto_total_transaccion BETWEEN 4000001 AND 6000000 THEN TO_CHAR(ttc.monto_total_transaccion * 0.04, '999G999G999D99')
+    WHEN ttc.monto_total_transaccion >= 6000001 THEN TO_CHAR(ttc.monto_total_transaccion * 0.07, '999G999G999D99')
+    ELSE 'NO entra dentro del rango '
+  END AS "APORTE AL SBIF"
+
+FROM transaccion_tarjeta_cliente ttc
+LEFT JOIN tipo_transaccion_tarjeta ttt 
+  ON ttt.cod_tptran_tarjeta = ttc.cod_tptran_tarjeta
+
+WHERE EXTRACT(YEAR FROM ttc.fecha_transaccion) = EXTRACT(YEAR FROM SYSDATE) - 1
+
+ORDER BY TO_CHAR(ttc.fecha_transaccion, 'MM') ASC, ttt.nombre_tptran_tarjeta;
+
+// caso 4
+
+SELECT 
+
+cl.numrun||' '||cl.dvrun,
+cl.pnombre||' '||cl.snombre||' '||cl.appaterno||' '||cl.apmaterno,
+sum(ttc.monto_total_transaccion)
+
+
+FROM cliente cl 
+LEFT JOIN tarjeta_cliente tc on (tc.numrun = cl.numrun)
+LEFT JOIN transaccion_tarjeta_cliente ttc on(tc.nro_tarjeta = ttc.nro_tarjeta)
+group by cl.numrun,cl.dvrun,cl.pnombre,cl.snombre,cl.appaterno,cl.apmaterno;
+
